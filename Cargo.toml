@@ -1,5 +1,5 @@
 [package]
-name = "fitapp_fr"
+name = "fitapp"
 version = "0.1.0"
 authors = ["markaveliii <mam25@pdx.edu>"]
 edition = "2018"

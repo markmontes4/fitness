@@ -2,7 +2,12 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::*;
 
-#[#[derive(Eq,PartialEq)]]
+const CAL_PER_PUSHUP:f32 = 0.45;
+const CAL_PER_SITUP:f32 = 0.15;
+const CAL_PER_SQUAT:f32 = 0.32;
+
+
+#[derive(Eq,PartialEq)]
 pub enum Intensity {
     LIGHT,
     MEDIUM,
@@ -35,6 +40,24 @@ impl Workout {
             squat_count: Default::default(),
         }
     }
+    pub fn light_workout(&mut self, prev_wo: &Workout){
+        self.calories_burned = prev_wo.calories_burned;
+        self.pushup_count = prev_wo.pushup_count;
+        self.situp_count = prev_wo.pushup_count;
+        self.squat_count = prev_wo.squat_count;
+    }
+    pub fn med_workout(&mut self, prev_wo: &Workout){
+        self.calories_burned = prev_wo.calories_burned+(5.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        self.pushup_count = prev_wo.pushup_count+5;
+        self.situp_count = prev_wo.pushup_count+5;
+        self.squat_count = prev_wo.squat_count+5;
+    }
+    pub fn heavy_workout(&mut self, prev_wo: &Workout){
+        self.calories_burned = prev_wo.calories_burned+(10.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        self.pushup_count = prev_wo.pushup_count+10;
+        self.situp_count = prev_wo.pushup_count+10;
+        self.squat_count = prev_wo.squat_count+10;
+    }
 }
 
 impl User {
@@ -60,15 +83,16 @@ impl User {
     }
 
     pub fn recommend_workout(&self, intensity: Intensity) -> Workout{
-        let rwo = Workout::new();
+        let mut rwo = Workout::new();
         match intensity{
-            Intensity::LIGHT => println!("Do some light shit."),
+            Intensity::LIGHT => rwo.light_workout(&self.previous_workout),
             Intensity::MEDIUM => println!("Do some medium shit."),
             Intensity::HARD => println!("Do some hard shit."),
         };
 
         rwo
     }
+
 }
 pub fn readfile(user: &User, filename: &str) -> Result<String>{
     let filec =  std::fs::read_to_string(filename);
