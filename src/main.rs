@@ -29,7 +29,8 @@ fn main() {
     
     u1 = fitapp::parse_file_cont(file_cont);
 
-    u1.recommend_workout(LIGHT);
+    u1.recommend_workout(HEAVY);
+    println!("{:?}", u1);
 
         
 }

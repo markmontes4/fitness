@@ -11,7 +11,7 @@ const CAL_PER_SQUAT:f32 = 0.32;
 pub enum Intensity {
     LIGHT,
     MEDIUM,
-    HARD,
+    HEAVY,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -82,15 +82,13 @@ impl User {
     
     }
 
-    pub fn recommend_workout(&self, intensity: Intensity) -> Workout{
-        let mut rwo = Workout::new();
+    pub fn recommend_workout(&mut self, intensity: Intensity){
         match intensity{
-            Intensity::LIGHT => rwo.light_workout(&self.previous_workout),
-            Intensity::MEDIUM => println!("Do some medium shit."),
-            Intensity::HARD => println!("Do some hard shit."),
+            Intensity::LIGHT => self.current_workout.light_workout(&self.previous_workout),
+            Intensity::MEDIUM => self.current_workout.med_workout(&self.previous_workout),
+            Intensity::HEAVY => self.current_workout.heavy_workout(&self.previous_workout),
+            _ => panic!("Workout does not exist"),
         };
-
-        rwo
     }
 
 }
