@@ -15,7 +15,7 @@ pub enum Intensity {
     HEAVY,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub struct Workout {
     pub calories_burned: u64,
     pub pushup_count: u64,
@@ -24,7 +24,7 @@ pub struct Workout {
     pub duration: Duration,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub struct User {
     pub username: String,
     pub email: String,
@@ -65,6 +65,10 @@ impl Workout {
         self.situp_count = prev_wo.pushup_count+10;
         self.squat_count = prev_wo.squat_count+10;
         self.duration = prev_wo.duration + Duration::new(1200,0);
+    }
+    pub fn no_workout(&self) -> bool{
+        if self.calories_burned == 0{return true;}
+        else {return false;}
     }
 }
 
@@ -107,6 +111,11 @@ impl User {
     }
 
     pub fn parse_file_cont(&mut self, cont: Vec<String>){
+        if cont.is_empty(){
+            self.current_workout = Workout::new();
+            self.sign_in_count = 1;
+            return;
+        }
         self.username = cont[0].clone();
         self.email =  cont[1].clone();
         self.sign_in_count =  cont[2].parse::<u64>().expect("Could not parse sign in count")+1;
@@ -115,26 +124,32 @@ impl User {
         self.previous_workout.pushup_count = cont[4].parse::<u64>().expect("Could not parse push up count");
         self.previous_workout.situp_count = cont[5].parse::<u64>().expect("Could not parse sit up count");
         self.previous_workout.squat_count = cont[6].parse::<u64>().expect("Could not parse squat count");
-        self.previous_workout.duration = Duration::from_secs_f32(cont[7].parse::<f32>().expect("Could not parse duration"));
+        self.previous_workout.duration = Duration::new(cont[7].parse::<u64>().expect("Could not parse duration"),0);
+    }
+
+    pub fn writefile(&self, filename: &str) -> Result <()> {
+        if self.current_workout.no_workout(){
+            panic!("No workout to record.");
+        }
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .open(filename)?;
+        file.write_all(format!("{}",self.username).as_bytes()).expect("Username read failed");
+        file.write_all(format!("\n{}",self.email).as_bytes()).expect("Email read failed");
+        file.write_all(format!("\n{}",self.sign_in_count.to_string()).as_bytes()).expect("Sign in count read failed");
+        file.write_all(format!("\n{}",self.current_workout.calories_burned.to_string()).as_bytes()).expect("Calories burned count read failed");
+        file.write_all(format!("\n{}",self.current_workout.pushup_count.to_string()).as_bytes()).expect("Pushup count read failed");
+        file.write_all(format!("\n{}",self.current_workout.situp_count.to_string()).as_bytes()).expect("Situp count read failed");
+        file.write_all(format!("\n{}",self.current_workout.squat_count.to_string()).as_bytes()).expect("Squat count read failed");
+        file.write_all(format!("\n{}",self.current_workout.duration.as_secs_f32().to_string()).as_bytes()).expect("Duration read failed");
+        Ok(())
     }
 
 }
 
 
-pub fn writefile(user: &User, filename: &str) -> Result <()> {
-    let mut file = OpenOptions::new()
-        .write(true)
-        .open(filename)?;
-    file.write_all(format!("{}",user.username).as_bytes()).expect("Username read failed");
-    file.write_all(format!("\n{}",user.email).as_bytes()).expect("Email read failed");
-    file.write_all(format!("\n{}",user.sign_in_count.to_string()).as_bytes()).expect("Sign in count read failed");
-    file.write_all(format!("\n{}",user.current_workout.calories_burned.to_string()).as_bytes()).expect("Calories burned count read failed");
-    file.write_all(format!("\n{}",user.current_workout.pushup_count.to_string()).as_bytes()).expect("Pushup count read failed");
-    file.write_all(format!("\n{}",user.current_workout.situp_count.to_string()).as_bytes()).expect("Situp count read failed");
-    file.write_all(format!("\n{}",user.current_workout.squat_count.to_string()).as_bytes()).expect("Squat count read failed");
-    file.write_all(format!("\n{}",user.current_workout.duration.as_secs_f32().to_string()).as_bytes()).expect("Duration read failed");
-    Ok(())
-}
+
 
 
 
