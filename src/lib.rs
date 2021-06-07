@@ -1,6 +1,7 @@
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::*;
+use std::time::{Duration, SystemTime};
 
 const CAL_PER_PUSHUP:f32 = 0.45;
 const CAL_PER_SITUP:f32 = 0.15;
@@ -20,6 +21,7 @@ pub struct Workout {
     pub pushup_count: u64,
     pub situp_count: u64,
     pub squat_count: u64,
+    pub duration: Duration,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -34,10 +36,11 @@ pub struct User {
 impl Workout {
     pub fn new() -> Workout{
         Workout{
-            calories_burned: Default::default(),
-            pushup_count: Default::default(),
-            situp_count: Default::default(),
-            squat_count: Default::default(),
+            calories_burned: 51,
+            pushup_count: 10,
+            situp_count: 20,
+            squat_count: 20,
+            duration: Duration::new(600,0),
         }
     }
     pub fn light_workout(&mut self, prev_wo: &Workout){
@@ -45,6 +48,7 @@ impl Workout {
         self.pushup_count = prev_wo.pushup_count;
         self.situp_count = prev_wo.pushup_count;
         self.squat_count = prev_wo.squat_count;
+        self.duration = prev_wo.duration;
     }
     pub fn med_workout(&mut self, prev_wo: &Workout){
         let add_cal = (5.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
@@ -52,6 +56,7 @@ impl Workout {
         self.pushup_count = prev_wo.pushup_count+5;
         self.situp_count = prev_wo.pushup_count+5;
         self.squat_count = prev_wo.squat_count+5;
+        self.duration = prev_wo.duration + Duration::new(600,0);
     }
     pub fn heavy_workout(&mut self, prev_wo: &Workout){
         let add_cal = (10.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
@@ -59,6 +64,7 @@ impl Workout {
         self.pushup_count = prev_wo.pushup_count+10;
         self.situp_count = prev_wo.pushup_count+10;
         self.squat_count = prev_wo.squat_count+10;
+        self.duration = prev_wo.duration + Duration::new(1200,0);
     }
 }
 
@@ -109,6 +115,7 @@ impl User {
         self.previous_workout.pushup_count = cont[4].parse::<u64>().expect("Could not parse push up count");
         self.previous_workout.situp_count = cont[5].parse::<u64>().expect("Could not parse sit up count");
         self.previous_workout.squat_count = cont[6].parse::<u64>().expect("Could not parse squat count");
+        self.previous_workout.duration = Duration::from_secs_f32(cont[7].parse::<f32>().expect("Could not parse duration"));
     }
 
 }
@@ -125,6 +132,7 @@ pub fn writefile(user: &User, filename: &str) -> Result <()> {
     file.write_all(format!("\n{}",user.current_workout.pushup_count.to_string()).as_bytes()).expect("Pushup count read failed");
     file.write_all(format!("\n{}",user.current_workout.situp_count.to_string()).as_bytes()).expect("Situp count read failed");
     file.write_all(format!("\n{}",user.current_workout.squat_count.to_string()).as_bytes()).expect("Squat count read failed");
+    file.write_all(format!("\n{}",user.current_workout.duration.as_secs_f32().to_string()).as_bytes()).expect("Duration read failed");
     Ok(())
 }
 
