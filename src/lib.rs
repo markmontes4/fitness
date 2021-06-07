@@ -47,13 +47,15 @@ impl Workout {
         self.squat_count = prev_wo.squat_count;
     }
     pub fn med_workout(&mut self, prev_wo: &Workout){
-        self.calories_burned = prev_wo.calories_burned+(5.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        let add_cal = (5.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        self.calories_burned = prev_wo.calories_burned+add_cal;
         self.pushup_count = prev_wo.pushup_count+5;
         self.situp_count = prev_wo.pushup_count+5;
         self.squat_count = prev_wo.squat_count+5;
     }
     pub fn heavy_workout(&mut self, prev_wo: &Workout){
-        self.calories_burned = prev_wo.calories_burned+(10.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        let add_cal = (10.0*(CAL_PER_PUSHUP+CAL_PER_SITUP+CAL_PER_SQUAT)) as u64;
+        self.calories_burned = prev_wo.calories_burned+add_cal;
         self.pushup_count = prev_wo.pushup_count+10;
         self.situp_count = prev_wo.pushup_count+10;
         self.squat_count = prev_wo.squat_count+10;
@@ -91,11 +93,26 @@ impl User {
         };
     }
 
+    pub fn readfile(&mut self, filename: &str) {
+        let filec:String = std::fs::read_to_string(filename)
+            .expect("Coult not read file");
+        let file_cont:Vec<String> = filec.split_whitespace().map(str::to_string).collect();
+        self.parse_file_cont(file_cont); 
+    }
+
+    pub fn parse_file_cont(&mut self, cont: Vec<String>){
+        self.username = cont[0].clone();
+        self.email =  cont[1].clone();
+        self.sign_in_count =  cont[2].parse::<u64>().expect("Could not parse sign in count")+1;
+        self.current_workout = Default::default();
+        self.previous_workout.calories_burned = cont[3].parse::<u64>().expect("Could not parse calories burned");
+        self.previous_workout.pushup_count = cont[4].parse::<u64>().expect("Could not parse push up count");
+        self.previous_workout.situp_count = cont[5].parse::<u64>().expect("Could not parse sit up count");
+        self.previous_workout.squat_count = cont[6].parse::<u64>().expect("Could not parse squat count");
+    }
+
 }
-pub fn readfile(user: &User, filename: &str) -> Result<String>{
-    let filec =  std::fs::read_to_string(filename);
-    filec
-}
+
 
 pub fn writefile(user: &User, filename: &str) -> Result <()> {
     let mut file = OpenOptions::new()
@@ -111,19 +128,5 @@ pub fn writefile(user: &User, filename: &str) -> Result <()> {
     Ok(())
 }
 
-pub fn parse_file_cont(cont: Vec<String>) -> User {
-    let mut u1 = User{
-        username: cont[0].clone(),
-        email: cont[1].clone(),
-        sign_in_count: cont[2].parse::<u64>().expect("Could not parse sign in count")+1,
-        current_workout: Default::default(),
-        previous_workout: Default::default(),
-    };
 
-    u1.previous_workout.calories_burned = cont[3].parse::<u64>().expect("Could not parse calories burned");
-    u1.previous_workout.pushup_count = cont[4].parse::<u64>().expect("Could not parse push up count");
-    u1.previous_workout.situp_count = cont[5].parse::<u64>().expect("Could not parse sit up count");
-    u1.previous_workout.squat_count = cont[6].parse::<u64>().expect("Could not parse squat count");
-    u1
-}
 
