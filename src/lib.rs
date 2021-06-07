@@ -1,11 +1,14 @@
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::*;
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 const CAL_PER_PUSHUP:f32 = 0.45;
+const TIME_PER_PUSHUP: u64 = 1;
 const CAL_PER_SITUP:f32 = 0.15;
+const TIME_PER_SITUP: u64 = 2;
 const CAL_PER_SQUAT:f32 = 0.32;
+const TIME_PER_SQUAT: u64 = 2;
 
 
 #[derive(Eq,PartialEq)]
@@ -13,6 +16,14 @@ pub enum Intensity {
     LIGHT,
     MEDIUM,
     HEAVY,
+}
+
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
+pub struct Plan {
+    pub situp_plan:(u64,u64,u64),
+    pub pushup_plan:(u64,u64,u64),
+    pub squat_plan:(u64,u64,u64),
+    pub duration: Duration,
 }
 
 #[derive(Debug, Clone, Default, Eq, PartialEq)]
@@ -67,9 +78,9 @@ impl Workout {
         self.duration = prev_wo.duration + Duration::new(1200,0);
     }
     pub fn no_workout(&self) -> bool{
-        if self.calories_burned == 0{return true;}
-        else {return false;}
+        self.calories_burned == 0
     }
+
 }
 
 impl User {
@@ -99,7 +110,6 @@ impl User {
             Intensity::LIGHT => self.current_workout.light_workout(&self.previous_workout),
             Intensity::MEDIUM => self.current_workout.med_workout(&self.previous_workout),
             Intensity::HEAVY => self.current_workout.heavy_workout(&self.previous_workout),
-            _ => panic!("Workout does not exist"),
         };
     }
 
@@ -114,7 +124,7 @@ impl User {
         if cont.is_empty(){
             self.current_workout = Workout::new();
             self.sign_in_count = 1;
-            return;
+            return
         }
         self.username = cont[0].clone();
         self.email =  cont[1].clone();
@@ -135,8 +145,8 @@ impl User {
         let mut file = OpenOptions::new()
             .write(true)
             .open(filename)?;
-        file.write_all(format!("{}",self.username).as_bytes()).expect("Username read failed");
-        file.write_all(format!("\n{}",self.email).as_bytes()).expect("Email read failed");
+        file.write_all(self.username.to_string().as_bytes()).expect("Username read failed");
+        file.write_all(format!("\n{}",self.email.to_string()).as_bytes()).expect("Email read failed");
         file.write_all(format!("\n{}",self.sign_in_count.to_string()).as_bytes()).expect("Sign in count read failed");
         file.write_all(format!("\n{}",self.current_workout.calories_burned.to_string()).as_bytes()).expect("Calories burned count read failed");
         file.write_all(format!("\n{}",self.current_workout.pushup_count.to_string()).as_bytes()).expect("Pushup count read failed");
@@ -144,6 +154,103 @@ impl User {
         file.write_all(format!("\n{}",self.current_workout.squat_count.to_string()).as_bytes()).expect("Squat count read failed");
         file.write_all(format!("\n{}",self.current_workout.duration.as_secs_f32().to_string()).as_bytes()).expect("Duration read failed");
         Ok(())
+    }
+
+}
+
+impl Plan {
+    pub fn new() -> Plan {
+        Plan{
+            situp_plan: Default::default(),
+            pushup_plan: Default::default(),
+            squat_plan: Default::default(),
+            duration: Default::default(),
+        }
+    }
+
+    pub fn create_plan(&mut self, cwo: &Workout){
+        if cwo.no_workout(){panic!("No workout provided")}
+        match cwo.situp_count{
+            1..=10 => {
+                self.situp_plan = (1,cwo.situp_count,1);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            11..=20 =>{
+                self.situp_plan = (2,cwo.situp_count/2,2);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            21..=50 => {
+                self.situp_plan = (3,cwo.situp_count/3,3);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            51..=100 => {
+                self.situp_plan = (4,cwo.situp_count/4,4);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            101..=150 => {
+                self.situp_plan = (5,cwo.situp_count/5,5);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            151..=200 => {
+                self.situp_plan = (6,cwo.situp_count/6,6);
+                self.duration += Duration::new(cwo.situp_count*TIME_PER_SITUP+(self.situp_plan.2*60),0);
+            },
+            _ => println!("Too many pushups"),
+        }
+        match cwo.pushup_count{
+            1..=10 => {
+                self.pushup_plan = (1,cwo.pushup_count,1);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            11..=20 =>{
+                self.pushup_plan = (2,cwo.pushup_count/2,2);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            21..=50 => {
+                self.pushup_plan = (3,cwo.pushup_count/3,3);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            51..=100 => {
+                self.pushup_plan = (4,cwo.pushup_count/4,4);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            101..=150 => {
+                self.pushup_plan = (5,cwo.pushup_count/5,5);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            151..=200 => {
+                self.pushup_plan = (6,cwo.pushup_count/6,6);
+                self.duration += Duration::new(cwo.pushup_count*TIME_PER_PUSHUP+(self.pushup_plan.2*60),0);
+            },
+            _ => println!("Too many pushups"),
+        }
+        match cwo.squat_count{
+            1..=10 => {
+                self.squat_plan = (1,cwo.squat_count,1);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            11..=20 =>{
+                self.squat_plan = (2,cwo.squat_count/2,2);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            21..=50 => {
+                self.squat_plan = (3,cwo.squat_count/3,3);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            51..=100 => {
+                self.squat_plan = (4,cwo.squat_count/4,4);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            101..=150 => {
+                self.squat_plan = (5,cwo.squat_count/5,5);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            151..=200 => {
+                self.squat_plan = (6,cwo.squat_count/6,6);
+                self.duration += Duration::new(cwo.squat_count*TIME_PER_SQUAT+(self.squat_plan.2*60),0);
+            },
+            _ => println!("Too many pushups"),
+        }
     }
 
 }
