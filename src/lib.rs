@@ -355,7 +355,7 @@ impl Plan {
 
         println!("\nGet ready for pushups...");
         for i in 0..self.pushup_plan.0 {
-            println!("\nSet: {}\n----------READY!----------",i+1);
+            println!("\nSet: {}\n----------READY!----------", i + 1);
             thread::sleep(Duration::new(2, 0));
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
@@ -366,7 +366,7 @@ impl Plan {
 
         println!("\nGet ready for situps...");
         for i in 0..self.situp_plan.0 {
-            println!("\nSet: {}\n----------READY!----------",i+1);
+            println!("\nSet: {}\n----------READY!----------", i + 1);
             thread::sleep(Duration::new(2, 0));
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
@@ -377,7 +377,7 @@ impl Plan {
 
         println!("\nGet ready for squats...");
         for i in 0..self.squat_plan.0 {
-            println!("\nSet: {}\n----------READY!----------",i+1);
+            println!("\nSet: {}\n----------READY!----------", i + 1);
             thread::sleep(Duration::new(2, 0));
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
@@ -396,7 +396,9 @@ impl Plan {
         println!("==========SET DONE==========");
         println!("Now rest for {} seconds", REST_INTERVALS);
         for r in 0..REST_INTERVALS {
-            if let 55..=REST_INTERVALS = r {println!("Rest ends in {}...", REST_INTERVALS-r)};
+            if let 55..=REST_INTERVALS = r {
+                println!("Rest ends in {}...", REST_INTERVALS - r)
+            };
             thread::sleep(Duration::new(1, 0));
         }
     }
