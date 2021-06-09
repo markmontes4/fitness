@@ -12,8 +12,9 @@ fn main(){
     u1.current_workout = wo;
     assert_eq!(u1.current_workout.pushup_count,10);
 }
-
 ```
+
+Run a sample run of a workout by typing 'cargo run --example workout_202020'
 
 ## Results
 I'm pretty satisfied with how in turned out. My initial proposal seemed align with what I have. I wasn't able to implement certain stats like heart rate, age, and weight because of not being an expert in the fitness field, I didn't know how to factor them into the workout results/recommendations.

@@ -10,6 +10,7 @@ const CAL_PER_SITUP: f32 = 0.15;
 const TIME_PER_SITUP: u64 = 3;
 const CAL_PER_SQUAT: f32 = 0.32;
 const TIME_PER_SQUAT: u64 = 3;
+
 const REST_INTERVALS: u64 = 60;
 
 #[derive(Eq, PartialEq)]
