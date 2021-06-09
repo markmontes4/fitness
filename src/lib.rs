@@ -360,6 +360,7 @@ impl Plan {
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
             println!("----------GO!----------");
+            println!("\n==PUSHUP COUNT==");
             thread::sleep(Duration::new(2, 0));
             Plan::start_helper(self.pushup_plan);
         }
@@ -371,6 +372,7 @@ impl Plan {
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
             println!("----------GO!----------");
+            println!("\n==SITUP COUNT==");
             thread::sleep(Duration::new(2, 0));
             Plan::start_helper(self.situp_plan);
         }
@@ -381,7 +383,8 @@ impl Plan {
             thread::sleep(Duration::new(2, 0));
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
-            println!("----------GO!----------");
+            println!("----------GO!----------");            
+            println!("\n==SQUAT COUNT==");
             thread::sleep(Duration::new(2, 0));
             Plan::start_helper(self.squat_plan);
         }
@@ -391,7 +394,7 @@ impl Plan {
     fn start_helper(plan: (u64, u64, u64)) {
         for j in 0..plan.1 {
             println!("Count: {}", j + 1);
-            //thread::sleep(Duration::new(TIME_PER_PUSHUP,0));
+            thread::sleep(Duration::new(TIME_PER_PUSHUP,0));
         }
         println!("==========SET DONE==========");
         println!("Now rest for {} seconds", REST_INTERVALS);
