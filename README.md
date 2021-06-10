@@ -1,6 +1,11 @@
 # Fitapp Library
 The Fitapp library can be used for an application that needs a way to structure a persons workout routine. The library focuses on 3 major exercises: pushups, situps, and squats. It allows the creation of a User that holds information like username, email, current workout routine, and previous workout routine. The library can also recommend a workout based on intensity level: Light, Medium, Hard. It can also create a workout Plan by setting up the amount of sets and reps for an exercise, number of breaks, and a total duration. This library is made for progressive workouts, and allows to save a previous workout, and load it into a current workout. The library also includes an in-terminal program that allows you to start a workout within a terminal session.
 
+Testing Done:
+* Struct creation
+* Validity of writes and reads to a text file.
+* Workout recommendation accuracy
+
 ## Usage
 To use the library, you can download the project from Github via: https://github.com/markmontes4/fitness. In the CARGO.toml, ensure to include the correct dependencies. From there, you can use the fitapp namespace to access User, Workout, and Plan structures. 
 

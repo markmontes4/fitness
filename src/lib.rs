@@ -138,14 +138,13 @@ impl User {
 
     pub fn parse_file_cont(&mut self, cont: Vec<String>) {
         if cont.is_empty() {
-           panic!("No previous data to read."); 
+            panic!("No previous data to read.");
         }
         self.username = cont[0].clone();
         self.email = cont[1].clone();
-        self.sign_in_count = cont[2]
-            .parse::<u64>()
-            .expect("Could not parse sign in count... Check username. Username cannot have any spaces")
-            +1;
+        self.sign_in_count = cont[2].parse::<u64>().expect(
+            "Could not parse sign in count... Check username. Username cannot have any spaces",
+        ) + 1;
         self.current_workout = Default::default();
         self.previous_workout.calories_burned = cont[3]
             .parse::<u64>()
@@ -382,7 +381,7 @@ impl Plan {
             thread::sleep(Duration::new(2, 0));
             println!("----------SET!----------");
             thread::sleep(Duration::new(2, 0));
-            println!("----------GO!----------");            
+            println!("----------GO!----------");
             println!("\n==SQUAT COUNT==");
             thread::sleep(Duration::new(2, 0));
             Plan::start_helper(self.squat_plan);
@@ -393,7 +392,7 @@ impl Plan {
     fn start_helper(plan: (u64, u64, u64)) {
         for j in 0..plan.1 {
             println!("Count: {}", j + 1);
-            thread::sleep(Duration::new(TIME_PER_PUSHUP,0));
+            thread::sleep(Duration::new(TIME_PER_PUSHUP, 0));
         }
         println!("==========SET DONE==========");
         println!("Now rest for {} seconds", REST_INTERVALS);
