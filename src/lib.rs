@@ -97,7 +97,7 @@ impl User {
         User {
             username: username.to_string(),
             email: email.to_string(),
-            sign_in_count: Default::default(),
+            sign_in_count: 0,
             current_workout: Default::default(),
             previous_workout: Default::default(),
         }
@@ -138,16 +138,14 @@ impl User {
 
     pub fn parse_file_cont(&mut self, cont: Vec<String>) {
         if cont.is_empty() {
-            self.current_workout = Workout::new(10, 10, 10);
-            self.sign_in_count = 1;
-            return;
+           panic!("No previous data to read."); 
         }
         self.username = cont[0].clone();
         self.email = cont[1].clone();
         self.sign_in_count = cont[2]
             .parse::<u64>()
-            .expect("Could not parse sign in count")
-            + 1;
+            .expect("Could not parse sign in count... Check username. Username cannot have any spaces")
+            +1;
         self.current_workout = Default::default();
         self.previous_workout.calories_burned = cont[3]
             .parse::<u64>()
